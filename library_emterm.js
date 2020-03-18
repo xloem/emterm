@@ -62,7 +62,7 @@ mergeInto(LibraryManager.library, {
         for (var i = 0; i < length; i++) {
           var result;
           try {
-            result = stream.tty.ops.get_char(stream.tty);
+            result = stream.tty.ops.get_char(stream.tty, stream.flags & 0x800 /*O_NONBLOCK*/ === 0);
           } catch (e) {
             throw new FS.ErrnoError({{{ cDefine('EIO') }}});
           }
@@ -100,8 +100,8 @@ mergeInto(LibraryManager.library, {
       // a.) the next character represented as an integer
       // b.) undefined to signal that no data is currently available
       // c.) null to signal an EOF
-      get_char: function(tty) {
-        if (Module.tty && Module.tty.get_char) return Module.tty.get_char(tty);
+      get_char: function(tty, blocking) {
+        if (Module.tty && Module.tty.get_char) return Module.tty.get_char(tty, blocking);
         if (!tty.input.length) {
           var result = null;
 #if ENVIRONMENT_MAY_BE_NODE
