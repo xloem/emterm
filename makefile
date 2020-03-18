@@ -1,4 +1,4 @@
 all: test.html
 
-%.html: %.cpp shell_emterm.html makefile
-	emcc -s "EXTRA_EXPORTED_RUNTIME_METHODS=['TTY','FS']" --shell-file "shell_emterm.html" "$<" -o "$@"
+%.html: %.cpp library_emterm.js shell_emterm.html makefile
+	emcc --js-library library_emterm.js --shell-file shell_emterm.html "$<" -o "$@"
