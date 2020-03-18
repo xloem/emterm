@@ -101,7 +101,7 @@ mergeInto(LibraryManager.library, {
       // b.) undefined to signal that no data is currently available
       // c.) null to signal an EOF
       get_char: function(tty) {
-        return undefined;
+        if (Module.tty && Module.tty.get_char) return Module.tty.get_char(tty);
         if (!tty.input.length) {
           var result = null;
 #if ENVIRONMENT_MAY_BE_NODE
@@ -149,17 +149,23 @@ mergeInto(LibraryManager.library, {
         return tty.input.shift();
       },
       put_char: function(tty, val) {
+        if (Module.tty && Module.tty.put_char) return Module.tty.put_char(tty, val);
         if (val === null || val === {{{ charCode('\n') }}}) {
-          out('hello! ' + UTF8ArrayToString(tty.output, 0));
+          if (Module.tty && Module.tty.put_array) {
+            if (val !== null) tty.output.push(val);
+            Module.tty.put_array(tty, tty.output);
+          } else {
+            out(UTF8ArrayToString(tty.output, 0));
+          }
           tty.output = [];
         } else {
           if (val != 0) tty.output.push(val); // val == 0 would cut text output off in the middle.
         }
       },
       flush: function(tty) {
+        if (Module.tty && Module.tty.flush) return Module.tty.flush(tty);
         if (tty.output && tty.output.length > 0) {
-          out(UTF8ArrayToString(tty.output, 0));
-          tty.output = [];
+          tty.ops.put_char(tty, null);
         }
       }
     },

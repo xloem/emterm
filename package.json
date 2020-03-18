@@ -1,0 +1,30 @@
+{
+  "name": "emterm",
+  "version": "1.0.0",
+  "description": "emscripten setup to provide for in-browser terminal applications",
+  "main": " ",
+  "dependencies": {
+    "xterm": "^4.4.0",
+    "xterm-addon-fit": "^0.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "make"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xloem/emterm.git"
+  },
+  "keywords": [
+    "emscripten",
+    "emsdk",
+    "term",
+    "terminal"
+  ],
+  "author": "Karl Semich <0xloem@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/xloem/emterm/issues"
+  },
+  "homepage": "https://github.com/xloem/emterm#readme"
+}
