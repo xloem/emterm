@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Terminal Application</title>
+    <style>
+      body {
+        font-family: arial;
+        margin: 0;
+        padding: none;
+      }
+
+      .emscripten { padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
+      div.emscripten { text-align: center; }
+      #output {
+        width: 100%;
+        height: 200px;
+        margin: 0 auto;
+        margin-top: 10px;
+        border-left: 0px;
+        border-right: 0px;
+        padding-left: 0px;
+        padding-right: 0px;
+        display: block;
+        background-color: black;
+        color: white;
+        font-family: 'Lucida Console', Monaco, monospace;
+        outline: none;
+      }
+
+      @-webkit-keyframes rotation {
+        from {-webkit-transform: rotate(0deg);}
+        to {-webkit-transform: rotate(360deg);}
+      }
+      @-moz-keyframes rotation {
+        from {-moz-transform: rotate(0deg);}
+        to {-moz-transform: rotate(360deg);}
+      }
+      @-o-keyframes rotation {
+        from {-o-transform: rotate(0deg);}
+        to {-o-transform: rotate(360deg);}
+      }
+      @keyframes rotation {
+        from {transform: rotate(0deg);}
+        to {transform: rotate(360deg);}
+      }
+
+    </style>
+  </head>
+  <body>
+    <div class="emscripten">
+      <input type="checkbox" id="resize">Resize canvas
+      <input type="checkbox" id="pointerLock" checked>Lock/hide mouse pointer
+      &nbsp;&nbsp;&nbsp;
+      <input type="button" value="Fullscreen" onclick="Module.requestFullscreen(document.getElementById('pointerLock').checked, 
+                                                                                document.getElementById('resize').checked)">
+    </div>
+    <textarea id="output"></textarea>
+    <script type='text/javascript'>
+      var outputElement = document.getElementById('output');
+      function write(text) {
+        if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+        // These replacements are necessary if you render to raw HTML
+        //text = text.replace(/&/g, "&amp;");
+        //text = text.replace(/</g, "&lt;");
+        //text = text.replace(/>/g, "&gt;");
+        //text = text.replace('\n', '<br>', 'g');
+        console.log(text);
+        if (outputElement) {
+          outputElement.value += text + "\n";
+          outputElement.scrollTop = outputElement.scrollHeight; // focus on bottom
+        }
+      };
+
+      var Module = {
+        preRun: [],
+        postRun: [],
+        print: (function() {
+          if (outputElement) outputElement.value = ''; // clear browser cache
+          return write;
+        })(),
+        printErr: write,
+        canvas: (function() {
+          var canvas = document.getElementById('canvas');
+
+          // As a default initial behavior, pop up an alert when webgl context is lost. To make your
+          // application robust, you may want to override this behavior before shipping!
+          // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+          if (canvas) canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+
+          return canvas;
+        })(),
+        setStatus: function(text) {
+          write((new Date()).toISOString() + ': ' + text);
+        },
+        totalDependencies: 0,
+        monitorRunDependencies: function(left) {
+          this.totalDependencies = Math.max(this.totalDependencies, left);
+          Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+        }
+      };
+      Module.setStatus('Downloading...');
+      window.onerror = function() {
+        Module.setStatus('Exception thrown, see JavaScript console');
+        Module.setStatus = function(text) {
+          if (text) Module.printErr('[post-exception status] ' + text);
+        };
+      };
+    </script>
+    {{{ SCRIPT }}}
+  </body>
+</html>
