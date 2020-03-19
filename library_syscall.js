@@ -147,7 +147,6 @@ var SyscallsLibrary = {
       return ret;
     },
     doWritev: function(stream, iov, iovcnt, offset) {
-      out('writev');
       var ret = 0;
       for (var i = 0; i < iovcnt; i++) {
         var ptr = {{{ makeGetValue('iov', 'i*8', 'i32') }}};
@@ -297,7 +296,6 @@ var SyscallsLibrary = {
     return FS.read(stream, {{{ heapAndOffset('HEAP8', 'buf') }}}, count);
   },
   __syscall4: function(fd, buf, count) { // write
-    out('write');
 #if SYSCALLS_REQUIRE_FILESYSTEM
     var stream = SYSCALLS.getStreamFromFD(fd);
     return FS.write(stream, {{{ heapAndOffset('HEAP8', 'buf') }}}, count);
@@ -445,8 +443,6 @@ var SyscallsLibrary = {
         if (!stream.tty) return -{{{ cDefine('ENOTTY') }}};
         var argp = SYSCALLS.get();
         return FS.ioctl(stream, op, argp);
-        {{{ makeSetValue('argp', 0/*C_STRUCTS.winsize.ws_row*/, 10, 'i16') }}};
-        {{{ makeSetValue('argp', 2/*C_STRUCTS.winsize.ws_col*/, 11, 'i16') }}};
       }
       default: abort('bad ioctl syscall ' + op);
     }

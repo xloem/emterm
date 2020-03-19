@@ -88,6 +88,12 @@
           },
           get_char: function(tty) {
             return undefined;
+          },
+          get_winsize: function(tty, winsize) {
+            winsize.ws_row = term.rows;
+            winsize.ws_col = term.cols;
+            winsize.ws_xpixel = term.element.clientWidth;
+            winsize.ws_ypixel = term.element.clientHeight;
           }
         },
         preRun: [],

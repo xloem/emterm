@@ -94,11 +94,41 @@ mergeInto(LibraryManager.library, {
         }
         return i;
       },
-      ioctl: function(stream, cmd, arg) {
+      ioctl: function(stream, op, argp) {
         if (!stream.tty) {
           throw new FS.ErrnoError({{{ cDefine('ENOTTY') }}});
         }
-        // TODO STUB
+        switch (op) {
+          case {{{ cDefine('TIOCGWINSZ') }}}: {
+            if (Module.tty && Module.tty.get_winsize) {
+              var winsize = {
+                ws_row: 0,
+                ws_col: 0,
+                ws_xpixel: 0,
+                ws_ypixel: 0
+              };
+              Module.tty.get_winsize(stream.tty, winsize);
+              {{{ makeSetValue('argp', 0/*C_STRUCTS.winsize.ws_row*/, 'winsize.ws_row', 'i16') }}};
+              {{{ makeSetValue('argp', 2/*C_STRUCTS.winsize.ws_col*/, 'winsize.ws_col', 'i16') }}};
+              {{{ makeSetValue('argp', 4/*C_STRUCTS.winsize.ws_xpixel*/, 'winsize.ws_xpixel', 'i16') }}};
+              {{{ makeSetValue('argp', 6/*C_STRUCTS.winsize.ws_ypixel*/, 'winsize.ws_ypixel', 'i16') }}};
+            }
+            return 0;
+          }
+          case {{{ cDefine('TIOCSWINSZ') }}}: {
+            if (Module.tty && Module.tty.set_winsize) {
+              var winsize = {
+                ws_row: {{{ makeGetValue('argp', 0/*C_STRUCTS.winsize.ws_row*/, 'i16') }}},
+                ws_col: {{{ makeGetValue('argp', 2/*C_STRUCTS.winsize.ws_col*/, 'i16') }}},
+                ws_xpixel: {{{ makeGetValue('argp', 4/*C_STRUCTS.winsize.ws_xpixel*/, 'i16') }}},
+                ws_ypixel: {{{ makeGetValue('argp', 6/*C_STRUCTS.winsize.ws_ypixel*/, 'i16') }}}
+              }
+              Module.tty.set_winsize(stream.tty, winsize);
+            }
+            return 0;
+          }
+          default: return 0;
+        }
       }
     },
     default_tty_ops: {
