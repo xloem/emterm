@@ -16,26 +16,22 @@
         margin: 0;
         padding: none;
         height: 100%;
-        max-height: 100%;
-        display: flex;
-        flex-flow: column;
       }
 
-      #emscripten {
-        padding-right: 0;
-        margin-left: auto;
-        margin-right: auto;
-        flex: 0 1 auto;
-        text-align: center;
+      #fullscreen {
+        position: absolute;
+        top: 1mm;
+        right: 1mm;
+        z-index: 5;
       }
       
       #output {
         width: 100%;
+        height: 100%;
         margin: 0 auto;
         border: 0px;
         padding: 0px;
         overflow: hidden;
-        flex: 1 1 auto;
       }
 
       @-webkit-keyframes rotation {
@@ -58,13 +54,36 @@
     </style>
   </head>
   <body>
-    <div id="emscripten">
-      <input type="checkbox" id="resize">Resize canvas
-      <input type="checkbox" id="pointerLock" checked>Lock/hide mouse pointer
-      &nbsp;&nbsp;&nbsp;
-      <input type="button" value="Fullscreen" onclick="Module.requestFullscreen(document.getElementById('pointerLock').checked, 
-                                                                                document.getElementById('resize').checked)">
-    </div>
+    <a id="fullscreen" href='#' onclick="Module.requestFullscreen(true/*hide/lock mouse*/, true/*resize canvas*/)">
+      <svg id="fs" version="1.1" viewBox="0 0 8 8" height="8mm" width="8mm">
+        <defs>
+          <marker id="fg" overflow="visible" orient="auto">
+            <path transform="scale(.8) rotate(180) translate(12.5)" d="m0 0l5-5-17.5 5 17.5 5-5-5z" fill-rule="evenodd"/>
+          </marker>
+          <marker id="bg" overflow="visible" orient="auto">
+            <path transform="matrix(-.8 0 0 -.8 -10 0)" d="m0 0 5-5-17.5 5 17.5 5z" fill="#fff" fill-rule="evenodd"/>
+          </marker>
+        </defs>
+        <g transform="translate(0,-289)">
+          <g>
+            <path stroke-width="0.2" marker-end="url(#bg)" d="M1.5,290.5 0,289" />
+            <path stroke-width="0.1" marker-end="url(#fg)" d="M2,291 0.5,289.5" />
+          </g>
+          <g transform="matrix(1,0,0,-1,-3e-8,586)" >
+            <path stroke-width="0.2" marker-end="url(#bg)" d="M1.5,290.5 0,289" />
+            <path stroke-width="0.1" marker-end="url(#fg)" d="M2,291 0.5,289.5" />
+          </g>
+          <g transform="matrix(-1,0,0,1,7.9999999,3.5252395e-7)" >
+            <path stroke-width="0.2" marker-end="url(#bg)" d="M1.5,290.5 0,289" />
+            <path stroke-width="0.1" marker-end="url(#fg)" d="M2,291 0.5,289.5" />
+          </g>
+          <g transform="rotate(-180,3.9999999,293)">
+            <path stroke-width="0.2" marker-end="url(#bg)" d="M1.5,290.5 0,289" />
+            <path stroke-width="0.1" marker-end="url(#fg)" d="M2,291 0.5,289.5" />
+          </g>
+        </g>
+      </svg>
+    </a>
     <div id="output"></div>
     <script type='text/javascript'>
       const term = new Terminal({convertEol: true, scrollback: 0});
