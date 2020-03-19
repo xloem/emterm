@@ -91,6 +91,8 @@ mergeInto(LibraryManager.library, {
         }
         if (length) {
           stream.node.timestamp = Date.now();
+        } else {
+          stream.tty.ops.put_char(stream.tty, null);
         }
         return i;
       },
