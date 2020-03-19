@@ -113,6 +113,7 @@
           return canvas;
         })(),
         setStatus: function(text) {
+          if (text === '') return;
           write((new Date()).toISOString() + ': ' + text);
         },
         totalDependencies: 0,
