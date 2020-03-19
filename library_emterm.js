@@ -93,6 +93,12 @@ mergeInto(LibraryManager.library, {
           stream.node.timestamp = Date.now();
         }
         return i;
+      },
+      ioctl: function(stream, cmd, arg) {
+        if (!stream.tty) {
+          throw new FS.ErrnoError({{{ cDefine('ENOTTY') }}});
+        }
+        // TODO STUB
       }
     },
     default_tty_ops: {
