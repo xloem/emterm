@@ -88,10 +88,12 @@
     <script type='text/javascript'>
       const term = new Terminal({convertEol: true, scrollback: 0});
       const fitAddon = new FitAddon.FitAddon();
+      var inputBuf = [];
       term.loadAddon(fitAddon);
       term.open(document.getElementById('output'));
       fitAddon.fit();
       window.addEventListener('resize', ()=>fitAddon.fit());
+      term.onData(data=> inputBuf = inputBuf.concat(intArrayFromString(data)));
       function write(text) {
         if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
         // These replacements are necessary if you render to raw HTML
@@ -109,7 +111,11 @@
             term.write(val);
           },
           get_char: function(tty) {
-            return undefined;
+            if (!inputBuf.length) return undefined;
+            return inputBuf.shift();
+          },
+          poll_in: function(tty) {
+            return inputBuf.length > 0;
           },
           get_winsize: function(tty, winsize) {
             winsize.ws_row = term.rows;

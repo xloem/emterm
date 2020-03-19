@@ -96,6 +96,25 @@ mergeInto(LibraryManager.library, {
         }
         return i;
       },
+      poll: function(stream) {
+        if (!stream.tty) {
+          throw new FS.ErrnoError({{{ cDefine('EBADF') }}});
+        }
+        var ret = 0;
+        if (Module.tty && Module.tty.poll_out) {
+          if (Module.tty.poll_out(stream.tty)) {
+            ret |= {{{ cDefine('POLLOUT') }}};
+          }
+        } else {
+          ret |= {{{ cDefine('POLLOUT') }}};
+        }
+        if (stream.tty.input.length) {
+          ret |= {{{ cDefine('POLLIN') }}};
+        } else if (Module.tty && Module.tty.poll_in && Module.tty.poll_in(stream.tty)) {
+          ret |= {{{ cDefine('POLLIN') }}};
+        }
+        return ret;
+      },
       ioctl: function(stream, op, argp) {
         if (!stream.tty) {
           throw new FS.ErrnoError({{{ cDefine('ENOTTY') }}});
